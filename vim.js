@@ -1,4 +1,14 @@
-var gState = "NORMAL";
+// TODO: Consider using Object.watch() or Proxy to monitor state change
+var gState = {
+  _state: "NORMAL",
+  get: function() {
+    return this._state;
+  },
+  set: function(newState) {
+    this._state = newState;
+    updateStatusBar();
+  }
+};
 var gKeyQueue = [];
 var gLinkCodes = {};
 
@@ -6,7 +16,7 @@ document.addEventListener('keypress', function(evt){
   console.log(evt.key)
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
-  if ( gState == "NORMAL" ) {
+  if ( gState.get() == "NORMAL" ) {
 
     // TODO: extract the command <-> action mapping to a config file
     if (evt.key == 'j') {
@@ -33,7 +43,7 @@ document.addEventListener('keypress', function(evt){
       // TODO: asdfghjkl; codes
       var code = 0;
       Array.prototype.forEach.call(links, function(elem){
-        console.log(elem);
+        // console.log(elem);
         elem.style.backgroundColor = 'yellow';
         var codehint = document.createElement('span');
         codehint.textContent = code;
@@ -50,7 +60,7 @@ document.addEventListener('keypress', function(evt){
         gLinkCodes[String(code)] = elem;
         code += 1;
       })
-      gState = "FOLLOW";
+      gState.set("FOLLOW");
     }
     if (evt.key == 'r') {
       chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
@@ -59,7 +69,7 @@ document.addEventListener('keypress', function(evt){
       chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
     }
   }
-  if (gState == "FOLLOW") {
+  if (gState.get() == "FOLLOW") {
     // Number pad always returns "NumLock"!
     // Handle number > 10
     if (typeof(gLinkCodes[evt.key]) !== "undefined") {
@@ -68,3 +78,23 @@ document.addEventListener('keypress', function(evt){
     // TODO: implement ESC here
   }
 })
+
+// TODO: consider moving the status bar into a spearate file
+function updateStatusBar(){
+  console.log("State changed to " + gState.get());
+  document.getElementById("statusbar").textContent = "-- " + gState.get() + " --";
+}
+
+function initStatusBar(){
+  var statusbar = document.createElement('span');
+  statusbar.style.position = "fixed";
+  statusbar.style.bottom = "0";
+  statusbar.style.left = "0";
+  statusbar.style.backgroundColor = "white";
+  statusbar.style.color = "black";
+  statusbar.id = "statusbar";
+
+  document.body.appendChild(statusbar);
+};
+
+initStatusBar();
