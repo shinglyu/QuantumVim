@@ -4,7 +4,7 @@ var gLinkCodes = {};
 
 document.addEventListener('keypress', function(evt){
   console.log("State before: " + gState);
-  console.log("Key: " + evt.key)
+  console.log("Key: " + evt.key);
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
   if ( gState == "NORMAL" ) {
@@ -25,15 +25,14 @@ document.addEventListener('keypress', function(evt){
     }
     if (evt.key == 'J') {
       // TODO: make the scroll configurable
-      //chrome.tabs.update(1, {selected: true})
-      chrome.runtime.sendMessage({type:'switch_tab_left'})
-      console.log(chrome.tabs)
+      //chrome.tabs.update(1, {selected: true});
+      chrome.runtime.sendMessage({type:'switch_tab_left'});
+      console.log(chrome.tabs);
     }
     if (evt.key == 'K') {
       // TODO: make the scroll configurable
-      //chrome.tabs.update(1, {selected: true})
-      chrome.runtime.sendMessage({type:'switch_tab_right'})
-      console.log(chrome.tabs)
+      chrome.runtime.sendMessage({type:'switch_tab_right'});
+      console.log(chrome.tabs);
     }
     if (evt.key == 'f') {
       var links = document.querySelectorAll('a');
@@ -52,11 +51,11 @@ document.addEventListener('keypress', function(evt){
         codehint.style.top="0";
         codehint.style.left="0";
         codehint.style.padding="0.1em";
-        elem.style.position="relative"
+        elem.style.position="relative";
         elem.appendChild(codehint);
         gLinkCodes[String(code)] = elem;
         code += 1;
-      })
+      });
       gState = "FOLLOW";
     }
     if (evt.key == 'r') {
@@ -71,7 +70,7 @@ document.addEventListener('keypress', function(evt){
     }
     gState = "NORMAL";
   }
-  if (gState == "FOLLOW") {
+  else if (gState == "FOLLOW") {
     // Number pad always returns "NumLock"!
     // Handle number > 10
     if (typeof(gLinkCodes[evt.key]) !== "undefined") {
@@ -79,5 +78,27 @@ document.addEventListener('keypress', function(evt){
     }
     // TODO: implement ESC here
   }
+  else if (gState == "INSERT"){
+    if (evt.key == "Escape") {
+      console.log("ESC => NORMAL mode");
+      gState = "NORMAL";
+    }
+    else {
+      return;
+    }
+  }
   console.log("State after: " + gState);
-})
+});
+
+var inputs = document.getElementsByTagName('input');
+Array.prototype.forEach.call(inputs, function(elem){
+  console.log("Adding auto insert mode listener");
+  elem.addEventListener('focus', function(evt){
+    console.log("Input box focused, goto INSERT mode");
+    gState = "INSERT";
+  });
+  elem.addEventListener('blur', function(evt){
+    console.log("Input box blurred, goto NORMAL mode");
+    gState = "NORMAL";
+  });
+});
