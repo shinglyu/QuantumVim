@@ -2,7 +2,7 @@ var gState = "NORMAL";
 var gKeyQueue = [];
 var gLinkCodes = {};
 
-document.addEventListener('keyup', function(evt){
+document.addEventListener('keypress', function(evt){
   console.log(evt.key)
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
