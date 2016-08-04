@@ -2,6 +2,8 @@ QuantumVim
 ================
 QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firefox releases with e10s and WebExtension.
 
+![screenshot](https://github.com/shinglyu/QuantumVim/raw/master/doc/screenshot.png)
+
 # Installation
 * Open `about:debugging`, click "Load temporary add-on"
 * Select the `manifest.json`
