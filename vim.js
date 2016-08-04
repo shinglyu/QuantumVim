@@ -3,7 +3,8 @@ var gKeyQueue = [];
 var gLinkCodes = {};
 
 document.addEventListener('keypress', function(evt){
-  console.log(evt.key)
+  console.log("State before: " + gState);
+  console.log("Key: " + evt.key)
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
   if ( gState == "NORMAL" ) {
@@ -15,6 +16,12 @@ document.addEventListener('keypress', function(evt){
     }
     if (evt.key == 'k') {
       window.scrollByLines(-1);
+    }
+    if (evt.key == 'g') {
+      gState = "GOTO";
+    }
+    if (evt.key == 'G') {
+      window.scrollTo(window.scrollX, document.body.scrollHeight);
     }
     if (evt.key == 'J') {
       // TODO: make the scroll configurable
@@ -58,6 +65,11 @@ document.addEventListener('keypress', function(evt){
     if (evt.key == 'R') {
       chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
     }
+  } else if (gState == "GOTO") {
+    if (evt.key == 'g') {
+      window.scrollTo(window.scrollX, 0);
+    }
+    gState = "NORMAL";
   }
   if (gState == "FOLLOW") {
     // Number pad always returns "NumLock"!
@@ -67,4 +79,5 @@ document.addEventListener('keypress', function(evt){
     }
     // TODO: implement ESC here
   }
+  console.log("State after: " + gState);
 })
