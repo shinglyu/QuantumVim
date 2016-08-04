@@ -30,6 +30,9 @@ chrome.runtime.onMessage.addListener(
     else if (request.type == "switch_tab_right") {
       console.log("Switching to right tab")
       swtich_tab(1)
+    } else if (request.type == "reload") {
+      console.log("Reload, bypassCache = " + request.bypassCache);
+      chrome.tabs.reload({ bypassCache: request.bypassCache });
     }
   }
 )

@@ -52,6 +52,12 @@ document.addEventListener('keyup', function(evt){
       })
       gState = "FOLLOW";
     }
+    if (evt.key == 'r') {
+      chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
+    }
+    if (evt.key == 'R') {
+      chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
+    }
   }
   if (gState == "FOLLOW") {
     // Number pad always returns "NumLock"!
