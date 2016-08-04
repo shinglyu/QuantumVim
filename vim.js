@@ -16,6 +16,9 @@ document.addEventListener('keyup', function(evt){
     if (evt.key == 'k') {
       window.scrollByLines(-1);
     }
+    if (evt.key == 'G') {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
     if (evt.key == 'J') {
       // TODO: make the scroll configurable
       //chrome.tabs.update(1, {selected: true})
