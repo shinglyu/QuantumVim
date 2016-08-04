@@ -17,6 +17,8 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `:tabopen`: open an URL or search in a new tab
 * `f`: follow links
 * `F`: follow links in a new tab
+* Insert Mode: pass all keys to `<input>` when focused
+* Passthrough Mode: pass all keys to the page
 
 #Contribute
 Please feel free to submit PR or issues.
