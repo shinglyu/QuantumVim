@@ -13,6 +13,7 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `J`, `K`: switch to previous/next tab
 * `r`, `R`: reload page (`R` bypass the local web cache)
 * `gg`, `G`: go to the top/bottom of the page
+* When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 
 # TODO:
 * `h`, `l`: scroll
@@ -26,3 +27,4 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 
 #Contribute
 Please feel free to submit PR or issues.
+You are suggested to run `jshint *.js` before you submit a pull request. To install jshint you can `npm install -g jshint`.
