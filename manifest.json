@@ -1,0 +1,26 @@
+{
+
+  "manifest_version": 2,
+  "name": "QuantumVim",
+  "version": "1.0",
+
+  "description": "Adds basic vim commands to Firefox with e10s",
+  "homepage_url": "about:blank",
+  "icons": {
+    "48": "icons/icon-48.png"
+  },
+
+  "permissions": [
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches":["<all_urls>"],
+      "js": ["vim.js"]
+    }
+  ],
+  "background": {
+    "scripts": ["vim-background.js"],
+    "persistent": false
+  }
+}
