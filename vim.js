@@ -4,45 +4,45 @@ var gLinkCodes = {};
 
 document.addEventListener('keypress', function(evt){
   console.log("State before: " + gState);
-  console.log("Key: " + evt.key);
+  console.log("Key: " + (evt.ctrlKey ? "Ctrl-" : "") + evt.key);
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
   if ( gState == "NORMAL" ) {
 
     // TODO: extract the command <-> action mapping to a config file
-    if (evt.key == 'j') {
+    if (evt.key == 'j' && !evt.ctrlKey) {
       // TODO: make the scroll configurable
       window.scrollByLines(1);
     }
-    if (evt.key == 'k') {
+    if (evt.key == 'k' && !evt.ctrlKey) {
       window.scrollByLines(-1);
     }
-    if (evt.key == 'g') {
+    if (evt.key == 'g' && !evt.ctrlKey) {
       gState = "GOTO";
     }
-    if (evt.key == 'G') {
+    if (evt.key == 'G' && !evt.ctrlKey) {
       window.scrollTo(window.scrollX, document.body.scrollHeight);
     }
-    if (evt.key == 'J') {
+    if (evt.key == 'J' && !evt.ctrlKey) {
       // TODO: make the scroll configurable
       //chrome.tabs.update(1, {selected: true});
       chrome.runtime.sendMessage({type:'switch_tab_left'});
       console.log(chrome.tabs);
     }
-    if (evt.key == 'K') {
+    if (evt.key == 'K' && !evt.ctrlKey) {
       // TODO: make the scroll configurable
       chrome.runtime.sendMessage({type:'switch_tab_right'});
       console.log(chrome.tabs);
     }
-    if (evt.key == 'H') {
+    if (evt.key == 'H' && !evt.ctrlKey) {
       // TODO: any reason we want to this this in the background script?
       history.back();
     }
-    if (evt.key == 'L') {
+    if (evt.key == 'L' && !evt.ctrlKey) {
       // TODO: any reason we want to this this in the background script?
       history.forward();
     }
-    if (evt.key == 'f') {
+    if (evt.key == 'f' && !evt.ctrlKey) {
       var links = document.querySelectorAll('a');
       // TODO: asdfghjkl; codes
       var code = 0;
@@ -66,14 +66,30 @@ document.addEventListener('keypress', function(evt){
       });
       gState = "FOLLOW";
     }
-    if (evt.key == 'r') {
+    if (evt.key == 'r' && !evt.ctrlKey) {
       chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
     }
-    if (evt.key == 'R') {
+    if (evt.key == 'R' && !evt.ctrlKey) {
       chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
     }
+    if (evt.key == 'b' && evt.ctrlKey) {
+      // Ctrl-b
+      window.scrollByPages(-1);
+    }
+    if (evt.key == 'f' && evt.ctrlKey) {
+      // Ctrl-f
+      window.scrollByPages(1);
+    }
+    if (evt.key == 'd' && evt.ctrlKey) {
+      // Ctrl-d
+      window.scrollBy(0, window.innerHeight / 2);
+    }
+    if (evt.key == 'u' && evt.ctrlKey) {
+      // Ctrl-u
+      window.scrollBy(0, -window.innerHeight / 2);
+    }
   } else if (gState == "GOTO") {
-    if (evt.key == 'g') {
+    if (evt.key == 'g' && !evt.ctrlKey) {
       window.scrollTo(window.scrollX, 0);
     }
     gState = "NORMAL";
