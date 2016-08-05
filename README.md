@@ -13,11 +13,11 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `J`, `K`: switch to previous/next tab
 * `r`, `R`: reload page (`R` bypass the local web cache)
 * `gg`, `G`: go to the top/bottom of the page
+* `H`, `L`: back/forward in history
 * When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 
 # TODO:
 * `h`, `l`: scroll
-* `H`, `L`: back/forward in history
 * `:open`: open an URL or search
 * `:tabopen`: open an URL or search in a new tab
 * `f`: follow links

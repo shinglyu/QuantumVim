@@ -34,6 +34,14 @@ document.addEventListener('keypress', function(evt){
       chrome.runtime.sendMessage({type:'switch_tab_right'});
       console.log(chrome.tabs);
     }
+    if (evt.key == 'H') {
+      // TODO: any reason we want to this this in the background script?
+      history.back();
+    }
+    if (evt.key == 'L') {
+      // TODO: any reason we want to this this in the background script?
+      history.forward();
+    }
     if (evt.key == 'f') {
       var links = document.querySelectorAll('a');
       // TODO: asdfghjkl; codes
