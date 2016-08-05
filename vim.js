@@ -89,6 +89,7 @@ document.addEventListener('keypress', function(evt){
   else if (gState == "INSERT"){
     if (evt.key == "Escape") {
       console.log("ESC => NORMAL mode");
+      document.activeElement.blur();
       gState = "NORMAL";
     }
     else {
