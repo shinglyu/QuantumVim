@@ -16,6 +16,8 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `H`, `L`: back/forward in history
 * `<C-f>`, `<C-b>`: scroll down/up by one page
 * `<C-d>`, `<C-u>`: scroll down/up by half a page
+* `y`: Copy current location
+* `Y`: Copy selected text
 * When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 
 # TODO:

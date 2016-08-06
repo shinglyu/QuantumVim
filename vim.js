@@ -74,6 +74,12 @@ document.addEventListener('keypress', function(evt){
         case 'R':
           chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
           break;
+        case 'y':
+          copyCurrentLocation();
+          break;
+        case 'Y':
+          document.execCommand('copy');
+          break;
         case 'C-b':
           window.scrollByPages(-1);
           break;
@@ -129,3 +135,27 @@ Array.prototype.forEach.call(inputs, function(elem){
     gState = "NORMAL";
   });
 });
+
+function copyToClipboard(str) {
+  // Once bug 1197451 is done, we can use Services.clipboardRead/Write
+  var textArea = document.createElement("textarea");
+  textArea.value = str;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textArea);
+}
+
+function copyCurrentLocation() {
+  // Copy the canonical link if possible.
+  // This will copy short urls such as https://bugzil.la/<id>.
+  let links = document.getElementsByTagName('link');
+  for (let link of links) {
+    if (link.rev == "canonical") {
+      copyToClipboard(link.href);
+      return;
+    }
+  }
+
+  copyToClipboard(window.location.href);
+}
