@@ -24,16 +24,19 @@ function swtich_tab(offset) {
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
     console.log(sender.tab);
-    if (request.type == "switch_tab_left") {
-      console.log("Switching to left tab");
-      swtich_tab(-1);
-    }
-    else if (request.type == "switch_tab_right") {
-      console.log("Switching to right tab");
-      swtich_tab(1);
-    } else if (request.type == "reload") {
-      console.log("Reload, bypassCache = " + request.bypassCache);
-      chrome.tabs.reload({ bypassCache: request.bypassCache });
+    switch (request.type) {
+      case "switch_tab_left":
+        console.log("Switching to left tab");
+        swtich_tab(-1);
+        break;
+      case "switch_tab_right":
+        console.log("Switching to right tab");
+        swtich_tab(1);
+        break;
+      case "reload":
+        console.log("Reload, bypassCache = " + request.bypassCache);
+        chrome.tabs.reload({ bypassCache: request.bypassCache });
+        break;
     }
   }
 );
