@@ -9,11 +9,13 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * Select the `manifest.json`
 
 # Supported commands
-* `j`, `k`: scroll page
+* `j`, `k`: scroll down/up by one line
 * `J`, `K`: switch to previous/next tab
 * `r`, `R`: reload page (`R` bypass the local web cache)
 * `gg`, `G`: go to the top/bottom of the page
 * `H`, `L`: back/forward in history
+* `<C-f>`, `<C-b>`: scroll down/up by one page
+* `<C-d>`, `<C-u>`: scroll down/up by half a page
 * When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 
 # TODO:
