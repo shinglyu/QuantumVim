@@ -80,6 +80,12 @@ document.addEventListener('keypress', function(evt){
         case 'Y':
           document.execCommand('copy');
           break;
+        case 'd':
+          chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: false });
+          break;
+        case 'D':
+          chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true });
+          break;
         case 'C-b':
           window.scrollByPages(-1);
           break;
