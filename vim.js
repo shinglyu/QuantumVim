@@ -98,6 +98,9 @@ document.addEventListener('keypress', function(evt){
         case 'C-u':
           window.scrollBy(0, -window.innerHeight / 2);
           break;
+        case 'I':
+          gState = "INSERT";
+          break;
       }
       break;
     case "GOTO":
