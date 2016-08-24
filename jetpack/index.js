@@ -1,8 +1,7 @@
-//var data = require("sdk/self").data;
 var wuntils = require('sdk/window/utils');
-var {Hotkey} = require('sdk/hotkeys');
-//var pageMod = require("sdk/page-mod");
-
+var tabs = require('sdk/tabs');
+var { Hotkey } = require('sdk/hotkeys');
+var { setTimeout  } = require("sdk/timers");
 
 var openHotKey = Hotkey({
   combo: "shift-o",
@@ -14,17 +13,16 @@ var openHotKey = Hotkey({
   }
 });
 
-/*
-pageMod.PageMod({
-  include: "*",
-  contentScriptFile: data.url("vim-jetpack.js"),
-  onAttach: function(worker) {
-    worker.port.on('open', function() {
-      console.log('open')
-    });
-    worker.port.on('tabopen', function() {
-      console.log('tabopen')
-    });
+var openHotKey = Hotkey({
+  combo: "shift-t",
+  onPress: function() {
+    tabs.open('about:newtab');
+    // Sleep for 0.5 sec so the tab focus is on the newly opened one
+    // This is not optimal, use the onOpen and onReady event to trigger this
+    setTimeout(function() {
+      var document = wuntils.getMostRecentBrowserWindow().document;
+      var urlbar = document.getElementById("urlbar");
+      urlbar.focus();
+    }, 500);
   }
 });
-*/
