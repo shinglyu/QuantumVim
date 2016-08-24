@@ -1,0 +1,16 @@
+{
+  "title": "QuantumVim Extra",
+  "name": "quantumvim-extra",
+  "version": "0.0.1",
+  "description": "Extra commands that is not supported by WebExtension",
+  "main": "index.js",
+  "author": "Shing Lyu",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "MPLv2",
+  "keywords": [
+    "jetpack"
+  ]
+}
