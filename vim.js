@@ -1,7 +1,6 @@
 var gState = "NORMAL";
-var gKeyQueue = [];
+var gKeyQueue = "";
 var gLinkCodes = {};
-let gCodeHints = [];
 
 document.addEventListener('keypress', function(evt){
   console.log("State before: " + gState);
@@ -46,29 +45,7 @@ document.addEventListener('keypress', function(evt){
           history.forward();
           break;
         case 'f':
-          var links = document.querySelectorAll('a');
-          // TODO: asdfghjkl; codes
-          var code = 0;
-          Array.prototype.forEach.call(links, function(elem){
-            console.log(elem);
-            let originalColor = elem.style.backgroundColor;
-            elem.style.backgroundColor = 'yellow';
-            var codehint = document.createElement('span');
-            codehint.textContent = code;
-            codehint.style.border="solid 1px black";
-            codehint.style.backgroundColor="white";
-            codehint.style.font="12px/14px bold sans-serif";
-            codehint.style.color="darkred";
-            codehint.style.position="absolute";
-            codehint.style.top="0";
-            codehint.style.left="0";
-            codehint.style.padding="0.1em";
-            elem.style.position="relative";
-            elem.appendChild(codehint);
-            gLinkCodes[String(code)] = elem;
-            gCodeHints.push({ codehint, originalColor });
-            code += 1;
-          });
+          highlight_links();
           gState = "FOLLOW";
           break;
         case 'r':
@@ -115,21 +92,18 @@ document.addEventListener('keypress', function(evt){
       gState = "NORMAL";
       break;
     case "FOLLOW":
-      function clear() {
-        for (let { codehint, originalColor } of gCodeHints) {
-          codehint.parentNode.style.backgroundColor = originalColor;
-          codehint.parentNode.removeChild(codehint);
-        }
-        gCodeHints = [];
-        gState = "NORMAL";
-      }
-      // Number pad always returns "NumLock"!
-      // Handle number > 10
-      if (typeof(gLinkCodes[evt.key]) !== "undefined") {
-        clear();
-        gLinkCodes[evt.key].click();
-      } else if (evt.key == "Escape") {
-        clear();
+      switch (keyStr) {
+        case "Escape":
+          console.log("ESC => NORMAL mode");
+          follow_to_normal();
+          break;
+        case "Enter":
+          follow_link(gKeyQueue);
+          break;
+        default:
+          console.log("Follow code: " + keyStr);
+          accumulate_link_codes(keyStr);
+          break;
       }
       break;
     case "INSERT":
@@ -144,6 +118,7 @@ document.addEventListener('keypress', function(evt){
   }
   console.log("State after: " + gState);
 });
+
 
 var inputs = document.getElementsByTagName('input');
 Array.prototype.forEach.call(inputs, function(elem){
@@ -180,4 +155,95 @@ function copyCurrentLocation() {
   }
 
   copyToClipboard(window.location.href);
+}
+
+/* Link Following */
+function highlight_links() {
+  // TODO: buttons, inputs
+  var links = document.querySelectorAll('a');
+  // TODO: asdfghjkl; codes
+  var code = 0;
+  Array.prototype.forEach.call(links, function(elem){
+    // console.log(elem);
+    let originalColor = elem.style.backgroundColor;
+    elem.style.backgroundColor = 'yellow';
+
+    var codehint = document.createElement('span');
+    codehint.textContent = code;
+    codehint.style.border="solid 1px black";
+    codehint.style.backgroundColor="white";
+    codehint.style.font="12px/14px bold sans-serif";
+    codehint.style.color="darkred";
+    codehint.style.position="absolute";
+    codehint.style.top="0";
+    codehint.style.left="0";
+    codehint.style.padding="0.1em";
+
+    elem.style.position="relative";
+    elem.appendChild(codehint);
+
+    gLinkCodes[String(code)] = {
+      'element':elem, 
+      'codehint': codehint, 
+      'originalColor': originalColor
+    };
+    //gCodeHints.push({ codehint, originalColor });
+    code += 1;
+  });
+}
+
+function reduce_highlights(remain_pattern) {
+  for (var code in gLinkCodes) {
+    if (!code.startsWith(remain_pattern)) {
+      gLinkCodes[code].element.style.backgroundColor = gLinkCodes[code].originalColor;
+      gLinkCodes[code].codehint.remove();
+    }
+  }
+}
+
+function accumulate_link_codes(keyStr){
+  console.log("Received " + keyStr + ", current queue: " + gKeyQueue);
+  // TODO: make this more generic, handle chars
+  if (!(/^[0-9]$/.test(keyStr))){
+    return;
+  }
+  gKeyQueue += keyStr;
+  newGLinkCodes = {};
+  for (var code in gLinkCodes){
+    if (code.startsWith(gKeyQueue)){
+      // TODO: many return a new list instead?
+      newGLinkCodes[code] = gLinkCodes[code];
+    }
+  }
+
+  var matchesCount = Object.keys(newGLinkCodes).length;
+  console.log("Found " + matchesCount + " matches");
+
+  if (matchesCount === 0) {
+    // Cleanup and go back to normal mode
+    follow_to_normal();
+  }
+  else if (matchesCount === 1) {
+    // Go to the link!
+    follow_link(gKeyQueue);
+  }
+  else {
+    reduce_highlights(gKeyQueue);
+    gLinkCodes = newGLinkCodes;
+  }
+}
+
+function follow_link(key){
+  console.log("Clicking " + key);
+  if (typeof(gLinkCodes[key]) !== "undefined") {
+    gLinkCodes[key].element.click();
+  }
+  follow_to_normal();
+}
+
+function follow_to_normal() {
+  reduce_highlights("NEVER_MATCH");
+  gLinkCodes = {};
+  gKeyQueue = "";
+  gState = "NORMAL";
 }
