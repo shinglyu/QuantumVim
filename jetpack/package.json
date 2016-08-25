@@ -2,7 +2,7 @@
   "title": "QuantumVim Extra",
   "name": "quantumvim-extra",
   "version": "0.0.1",
-  "description": "Extra commands that is not supported by WebExtension",
+  "description": "Extra vim commands that is not supported in QuantumVim because of the limitations of WebExtension",
   "main": "index.js",
   "author": "Shing Lyu",
   "engines": {

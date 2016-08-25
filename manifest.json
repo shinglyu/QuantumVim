@@ -1,15 +1,12 @@
 {
-
   "manifest_version": 2,
   "name": "QuantumVim",
   "version": "1.0",
 
-  "description": "Adds basic vim commands to Firefox with e10s",
-  "homepage_url": "about:blank",
+  "description": "Adds basic vim commands to Firefox 48+ (with e10s & WebExtension)",
   "icons": {
     "48": "icons/icon-48.png"
   },
-
   "permissions": [
     "tabs"
   ],
