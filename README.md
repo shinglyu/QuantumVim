@@ -19,6 +19,7 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `y`: Copy current location
 * `Y`: Copy selected text
 * `d`, `D`: close the current tab and focus the left/right one.
+* `f`: follow links, press <Esc> to abort.
 * When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 * `I`: enter INSERT MODE manually
 
@@ -26,7 +27,6 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `h`, `l`: scroll
 * `:open`: open an URL or search
 * `:tabopen`: open an URL or search in a new tab
-* `f`: follow links
 * `F`: follow links in a new tab
 * Insert Mode: pass all keys to `<input>` when focused
 * Passthrough Mode: pass all keys to the page

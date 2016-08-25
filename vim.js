@@ -1,6 +1,7 @@
 var gState = "NORMAL";
 var gKeyQueue = [];
 var gLinkCodes = {};
+let gCodeHints = [];
 
 document.addEventListener('keypress', function(evt){
   console.log("State before: " + gState);
@@ -50,6 +51,7 @@ document.addEventListener('keypress', function(evt){
           var code = 0;
           Array.prototype.forEach.call(links, function(elem){
             console.log(elem);
+            let originalColor = elem.style.backgroundColor;
             elem.style.backgroundColor = 'yellow';
             var codehint = document.createElement('span');
             codehint.textContent = code;
@@ -64,6 +66,7 @@ document.addEventListener('keypress', function(evt){
             elem.style.position="relative";
             elem.appendChild(codehint);
             gLinkCodes[String(code)] = elem;
+            gCodeHints.push({ codehint, originalColor });
             code += 1;
           });
           gState = "FOLLOW";
@@ -112,12 +115,22 @@ document.addEventListener('keypress', function(evt){
       gState = "NORMAL";
       break;
     case "FOLLOW":
+      function clear() {
+        for (let { codehint, originalColor } of gCodeHints) {
+          codehint.parentNode.style.backgroundColor = originalColor;
+          codehint.parentNode.removeChild(codehint);
+        }
+        gCodeHints = [];
+        gState = "NORMAL";
+      }
       // Number pad always returns "NumLock"!
       // Handle number > 10
-      if (typeof(gLinkCodes[keyStr]) !== "undefined") {
-        gLinkCodes[keyStr].click();
+      if (typeof(gLinkCodes[evt.key]) !== "undefined") {
+        clear();
+        gLinkCodes[evt.key].click();
+      } else if (evt.key == "Escape") {
+        clear();
       }
-      // TODO: implement ESC here
       break;
     case "INSERT":
       switch (keyStr) {
