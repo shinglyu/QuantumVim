@@ -143,18 +143,32 @@ document.addEventListener('keypress', function(evt){
   console.log("State after: " + gState);
 });
 
-var inputs = document.getElementsByTagName('input');
-Array.prototype.forEach.call(inputs, function(elem){
-  console.log("Adding auto insert mode listener");
-  elem.addEventListener('focus', function(evt){
-    console.log("Input box focused, goto INSERT mode");
-    gState = "INSERT";
-  });
-  elem.addEventListener('blur', function(evt){
-    console.log("Input box blurred, goto NORMAL mode");
-    gState = "NORMAL";
-  });
+
+window.addEventListener('load', function(){
+  autoInsertModeElements = ['INPUT', 'TEXTAREA'];
+
+  function registerAndEnterAutoInsertMode(elem){
+      console.log("Adding auto insert mode listener");
+      elem.addEventListener('focus', function(evt){
+        console.log("Input box focused, goto INSERT mode");
+        gState = "INSERT";
+      });
+      elem.addEventListener('blur', function(evt){
+        console.log("Input box blurred, goto NORMAL mode");
+        gState = "NORMAL";
+      });
+      if (document.activeElement.tagName == tagName){
+          console.log("Input box focused on page load, goto INSERT mode");
+          gState = "INSERT";
+      }
+  }
+
+  for (let tagName of autoInsertModeElements){
+    var inputs = document.getElementsByTagName(tagName);
+    Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
+  }
 });
+
 
 function copyToClipboard(str) {
   // Once bug 1197451 is done, we can use Services.clipboardRead/Write
