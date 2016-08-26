@@ -30,12 +30,10 @@ document.addEventListener('keypress', function(evt){
           // TODO: make the scroll configurable
           //chrome.tabs.update(1, {selected: true});
           chrome.runtime.sendMessage({type:'switch_tab_left'});
-          console.log(chrome.tabs);
           break;
         case 'K':
           // TODO: make the scroll configurable
           chrome.runtime.sendMessage({type:'switch_tab_right'});
-          console.log(chrome.tabs);
           break;
         case 'H':
           // TODO: any reason we want to this this in the background script?

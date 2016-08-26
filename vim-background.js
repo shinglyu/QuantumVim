@@ -71,6 +71,7 @@ function switchTab(offset) {
 
     // finally, get the index of the tab to activate and activate it
     let tabToActivate = yield getTabByIndex((currentIndex+offset+numTabs) % numTabs);
+    console.log("Move from tab #" + currentIndex + " to #" + tabToActivate.index);
     yield activateTab(tabToActivate);
   });
 }
