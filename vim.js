@@ -148,7 +148,7 @@ window.addEventListener('load', function(){
   autoInsertModeElements = ['INPUT', 'TEXTAREA'];
 
   function registerAndEnterAutoInsertMode(elem){
-      console.log("Adding auto insert mode listener");
+      console.log("Adding auto insert mode listener for element: " + elem);
       elem.addEventListener('focus', function(evt){
         console.log("Input box focused, goto INSERT mode");
         gState = "INSERT";
@@ -157,15 +157,15 @@ window.addEventListener('load', function(){
         console.log("Input box blurred, goto NORMAL mode");
         gState = "NORMAL";
       });
-      if (document.activeElement.tagName == tagName){
-          console.log("Input box focused on page load, goto INSERT mode");
-          gState = "INSERT";
-      }
   }
 
   for (let tagName of autoInsertModeElements){
     var inputs = document.getElementsByTagName(tagName);
     Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
+    if (document.activeElement.tagName == tagName){
+      console.log("Input box focused on page load, goto INSERT mode");
+      gState = "INSERT";
+    }
   }
 });
 
