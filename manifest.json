@@ -16,7 +16,7 @@
   "content_scripts": [
     {
       "matches":["<all_urls>"],
-      "js": ["vim.js"],
+      "js": ["vim.js", "focusin.min.js"],
       "run_at": "document_start"
     }
   ],

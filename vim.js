@@ -121,25 +121,23 @@ document.addEventListener('keypress', function(evt){
 window.addEventListener('load', function(){
   autoInsertModeElements = ['INPUT', 'TEXTAREA'];
 
-  function registerAndEnterAutoInsertMode(elem){
-      console.log("Adding auto insert mode listener for element: " + elem);
-      elem.addEventListener('focus', function(evt){
-        console.log("Input box focused, goto INSERT mode");
-        gState = "INSERT";
-      });
-      elem.addEventListener('blur', function(evt){
-        console.log("Input box blurred, goto NORMAL mode");
-        gState = "NORMAL";
-      });
-  }
-
-  for (let tagName of autoInsertModeElements){
-    var inputs = document.getElementsByTagName(tagName);
-    Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
-    if (document.activeElement.tagName == tagName){
-      console.log("Input box focused on page load, goto INSERT mode");
+  document.addEventListener('focusin', function(evt){
+    if (autoInsertModeElements.includes(evt.target.tagName)){
+      console.log("Input box focused, goto INSERT mode");
+      // TODO: use gState.get() when status bar patch landed
       gState = "INSERT";
     }
+  });
+  document.addEventListener('focusout', function(evt){
+    if (autoInsertModeElements.includes(evt.target.tagName)){
+      console.log("Input box blurred, goto NORMAL mode");
+      gState = "NORMAL";
+    }
+  });
+
+  if (autoInsertModeElements.includes(document.activeElement.tagName)){
+    console.log("Input box focused on page load, goto INSERT mode");
+    gState = "INSERT";
   }
 });
 
