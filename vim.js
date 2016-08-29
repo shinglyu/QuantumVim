@@ -243,7 +243,12 @@ function follow_to_normal() {
 
 function updateStatusBar(){
   console.log("State changed to " + gState.get());
-  document.getElementById("statusbar").textContent = "-- " + gState.get() + " --";
+  if (gState.get() == "NORMAL") {
+    document.getElementById("statusbar").textContent = "";
+  }
+  else {
+    document.getElementById("statusbar").textContent = "-- " + gState.get() + " --";
+  }
 }
 
 function initStatusBar(){
@@ -251,7 +256,7 @@ function initStatusBar(){
   statusbar.style.position = "fixed";
   statusbar.style.bottom = "0";
   statusbar.style.left = "0";
-  statusbar.style.backgroundColor = "white";
+  statusbar.style.backgroundColor = "rgba(219,219, 182, 0.5)";
   statusbar.style.color = "black";
   statusbar.id = "statusbar";
 
