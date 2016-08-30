@@ -126,6 +126,30 @@ document.addEventListener('keypress', function(evt){
   console.log("State after: " + gState.get());
 });
 
+
+window.addEventListener('load', function(){
+  autoInsertModeElements = ['INPUT', 'TEXTAREA'];
+
+  document.addEventListener('focusin', function(evt){
+    if (autoInsertModeElements.includes(evt.target.tagName)){
+      console.log("Input box focused, goto INSERT mode");
+      // TODO: use gState.get() when status bar patch landed
+      gState = "INSERT";
+    }
+  });
+  document.addEventListener('focusout', function(evt){
+    if (autoInsertModeElements.includes(evt.target.tagName)){
+      console.log("Input box blurred, goto NORMAL mode");
+      gState = "NORMAL";
+    }
+  });
+
+  if (autoInsertModeElements.includes(document.activeElement.tagName)){
+    console.log("Input box focused on page load, goto INSERT mode");
+    gState = "INSERT";
+  }
+});
+
 function copyToClipboard(str) {
   // Once bug 1197451 is done, we can use Services.clipboardRead/Write
   var textArea = document.createElement("textarea");
