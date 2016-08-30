@@ -4,7 +4,9 @@ var { Hotkey } = require('sdk/hotkeys');
 var { setTimeout  } = require("sdk/timers");
 
 var openHotKey = Hotkey({
-  combo: "shift-o",
+  // o and shift-o will block your typing
+  // fix this after we implement INSERT mode switching
+  combo: "ctrl-shift-o",
   onPress: function() {
     var document = wuntils.getMostRecentBrowserWindow().document;
     var urlbar = document.getElementById("urlbar");
@@ -13,16 +15,24 @@ var openHotKey = Hotkey({
   }
 });
 
+function openTab() {
+  tabs.open('about:newtab');
+  // Sleep for 0.5 sec so the tab focus is on the newly opened one
+  // This is not optimal, use the onOpen and onReady event to trigger this
+  setTimeout(function() {
+    var document = wuntils.getMostRecentBrowserWindow().document;
+    var urlbar = document.getElementById("urlbar");
+    urlbar.focus();
+  }, 500);
+}
+
 var openHotKey = Hotkey({
-  combo: "shift-t",
-  onPress: function() {
-    tabs.open('about:newtab');
-    // Sleep for 0.5 sec so the tab focus is on the newly opened one
-    // This is not optimal, use the onOpen and onReady event to trigger this
-    setTimeout(function() {
-      var document = wuntils.getMostRecentBrowserWindow().document;
-      var urlbar = document.getElementById("urlbar");
-      urlbar.focus();
-    }, 500);
-  }
+  combo: "ctrl-shift-t",
+  onPress: openTab
+});
+
+//Use two hands to ease muscle stress, "n" is abbr for "newtab"
+var openHotKey = Hotkey({
+  combo: "ctrl-shift-n",
+  onPress: openTab
 });

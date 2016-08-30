@@ -1,15 +1,23 @@
-var gState = "NORMAL";
-var gKeyQueue = [];
+var gState = {
+  _state: "NORMAL",
+  get: function() {
+    return this._state;
+  },
+  set: function(newState) {
+    this._state = newState;
+    updateStatusBar();
+  }
+};
+var gKeyQueue = "";
 var gLinkCodes = {};
-let gCodeHints = [];
 
 document.addEventListener('keypress', function(evt){
-  console.log("State before: " + gState);
+  console.log("State before: " + gState.get());
   let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
   console.log("Key: " + keyStr);
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
-  switch (gState) {
+  switch (gState.get()) {
     case "NORMAL":
       // TODO: extract the command <-> action mapping to a config file
       switch (keyStr) {
@@ -21,7 +29,7 @@ document.addEventListener('keypress', function(evt){
           window.scrollByLines(-1);
           break;
         case 'g':
-          gState = "GOTO";
+          gState.set("GOTO");
           break;
         case 'G':
           window.scrollTo(window.scrollX, document.body.scrollHeight);
@@ -30,12 +38,10 @@ document.addEventListener('keypress', function(evt){
           // TODO: make the scroll configurable
           //chrome.tabs.update(1, {selected: true});
           chrome.runtime.sendMessage({type:'switch_tab_left'});
-          console.log(chrome.tabs);
           break;
         case 'K':
           // TODO: make the scroll configurable
           chrome.runtime.sendMessage({type:'switch_tab_right'});
-          console.log(chrome.tabs);
           break;
         case 'H':
           // TODO: any reason we want to this this in the background script?
@@ -46,30 +52,8 @@ document.addEventListener('keypress', function(evt){
           history.forward();
           break;
         case 'f':
-          var links = document.querySelectorAll('a');
-          // TODO: asdfghjkl; codes
-          var code = 0;
-          Array.prototype.forEach.call(links, function(elem){
-            console.log(elem);
-            let originalColor = elem.style.backgroundColor;
-            elem.style.backgroundColor = 'yellow';
-            var codehint = document.createElement('span');
-            codehint.textContent = code;
-            codehint.style.border="solid 1px black";
-            codehint.style.backgroundColor="white";
-            codehint.style.font="12px/14px bold sans-serif";
-            codehint.style.color="darkred";
-            codehint.style.position="absolute";
-            codehint.style.top="0";
-            codehint.style.left="0";
-            codehint.style.padding="0.1em";
-            elem.style.position="relative";
-            elem.appendChild(codehint);
-            gLinkCodes[String(code)] = elem;
-            gCodeHints.push({ codehint, originalColor });
-            code += 1;
-          });
-          gState = "FOLLOW";
+          highlight_links();
+          gState.set("FOLLOW");
           break;
         case 'r':
           chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
@@ -102,7 +86,7 @@ document.addEventListener('keypress', function(evt){
           window.scrollBy(0, -window.innerHeight / 2);
           break;
         case 'I':
-          gState = "INSERT";
+          gState.set("INSERT");
           break;
       }
       break;
@@ -112,24 +96,21 @@ document.addEventListener('keypress', function(evt){
           window.scrollTo(window.scrollX, 0);
           break;
       }
-      gState = "NORMAL";
+      gState.set("NORMAL");
       break;
     case "FOLLOW":
-      function clear() {
-        for (let { codehint, originalColor } of gCodeHints) {
-          codehint.parentNode.style.backgroundColor = originalColor;
-          codehint.parentNode.removeChild(codehint);
-        }
-        gCodeHints = [];
-        gState = "NORMAL";
-      }
-      // Number pad always returns "NumLock"!
-      // Handle number > 10
-      if (typeof(gLinkCodes[evt.key]) !== "undefined") {
-        clear();
-        gLinkCodes[evt.key].click();
-      } else if (evt.key == "Escape") {
-        clear();
+      switch (keyStr) {
+        case "Escape":
+          console.log("ESC => NORMAL mode");
+          follow_to_normal();
+          break;
+        case "Enter":
+          follow_link(gKeyQueue);
+          break;
+        default:
+          console.log("Follow code: " + keyStr);
+          accumulate_link_codes(keyStr);
+          break;
       }
       break;
     case "INSERT":
@@ -137,25 +118,12 @@ document.addEventListener('keypress', function(evt){
         case "Escape":
           console.log("ESC => NORMAL mode");
           document.activeElement.blur();
-          gState = "NORMAL";
+          gState.set("NORMAL");
           break;
       }
       break;
   }
-  console.log("State after: " + gState);
-});
-
-var inputs = document.getElementsByTagName('input');
-Array.prototype.forEach.call(inputs, function(elem){
-  console.log("Adding auto insert mode listener");
-  elem.addEventListener('focus', function(evt){
-    console.log("Input box focused, goto INSERT mode");
-    gState = "INSERT";
-  });
-  elem.addEventListener('blur', function(evt){
-    console.log("Input box blurred, goto NORMAL mode");
-    gState = "NORMAL";
-  });
+  console.log("State after: " + gState.get());
 });
 
 function copyToClipboard(str) {
@@ -181,3 +149,143 @@ function copyCurrentLocation() {
 
   copyToClipboard(window.location.href);
 }
+
+/* Link Following */
+function highlight_links() {
+  // TODO: buttons, inputs
+  var links = document.querySelectorAll('a');
+  // TODO: asdfghjkl; codes
+  var code = 0;
+  Array.prototype.forEach.call(links, function(elem){
+    // console.log(elem);
+    elem._originalBackgroundColor = elem.style.backgroundColor;
+    elem._originalPosition = elem.style.position;
+    elem.style.backgroundColor = 'yellow';
+
+    var codehint = document.createElement('span');
+    codehint.textContent = code;
+    codehint.style.border="solid 1px black";
+    codehint.style.backgroundColor="white";
+    codehint.style.font="12px/14px bold sans-serif";
+    codehint.style.color="darkred";
+    codehint.style.position="absolute";
+    codehint.style.top="0";
+    codehint.style.left="0";
+    codehint.style.padding="0.1em";
+
+    elem.style.position="relative";
+    elem.appendChild(codehint);
+
+    gLinkCodes[String(code)] = {
+      'element':elem,
+      'codehint': codehint
+    };
+    code += 1;
+  });
+}
+
+function reduce_highlights(remain_pattern) {
+  for (var code in gLinkCodes) {
+    if (!code.startsWith(remain_pattern)) {
+      gLinkCodes[code].element.style.backgroundColor = gLinkCodes[code].element._originalBackgroundColor;
+      gLinkCodes[code].element.style.position= gLinkCodes[code].element._originalPosition;
+      gLinkCodes[code].codehint.remove();
+    }
+  }
+}
+
+function accumulate_link_codes(keyStr){
+  console.log("Received " + keyStr + ", current queue: " + gKeyQueue);
+  // TODO: make this more generic, handle chars
+  if (!(/^[0-9]$/.test(keyStr))){
+    return;
+  }
+  gKeyQueue += keyStr;
+  newGLinkCodes = {};
+  for (var code in gLinkCodes){
+    if (code.startsWith(gKeyQueue)){
+      // TODO: many return a new list instead?
+      newGLinkCodes[code] = gLinkCodes[code];
+    }
+  }
+
+  var matchesCount = Object.keys(newGLinkCodes).length;
+  console.log("Found " + matchesCount + " matches");
+
+  if (matchesCount === 0) {
+    // Cleanup and go back to normal mode
+    follow_to_normal();
+  }
+  else if (matchesCount === 1) {
+    // Go to the link!
+    follow_link(gKeyQueue);
+  }
+  else {
+    reduce_highlights(gKeyQueue);
+    gLinkCodes = newGLinkCodes;
+  }
+}
+
+function follow_link(key){
+  console.log("Clicking " + key);
+  if (typeof(gLinkCodes[key]) !== "undefined") {
+    gLinkCodes[key].element.click();
+  }
+  follow_to_normal();
+}
+
+function follow_to_normal() {
+  reduce_highlights("NEVER_MATCH");
+  gLinkCodes = {};
+  gKeyQueue = "";
+  gState.set("NORMAL");
+}
+
+function updateStatusBar(){
+  console.log("State changed to " + gState.get());
+  if (gState.get() == "NORMAL") {
+    document.getElementById("statusbar").textContent = "";
+  }
+  else {
+    document.getElementById("statusbar").textContent = "-- " + gState.get() + " --";
+  }
+}
+
+function initStatusBar(){
+  var statusbar = document.createElement('span');
+  statusbar.style.position = "fixed";
+  statusbar.style.bottom = "0";
+  statusbar.style.left = "0";
+  statusbar.style.backgroundColor = "rgba(219,219, 182, 0.5)";
+  statusbar.style.color = "black";
+  statusbar.id = "statusbar";
+
+  document.body.appendChild(statusbar);
+}
+
+window.addEventListener('load', function(){
+  autoInsertModeElements = ['INPUT', 'TEXTAREA'];
+
+  function registerAndEnterAutoInsertMode(elem){
+      console.log("Adding auto insert mode listener for element: " + elem);
+      elem.addEventListener('focus', function(evt){
+        console.log("Input box focused, goto INSERT mode");
+        gState.set("INSERT");
+      });
+      elem.addEventListener('blur', function(evt){
+        console.log("Input box blurred, goto NORMAL mode");
+        gState.set("NORMAL");
+      });
+  }
+
+  for (let tagName of autoInsertModeElements){
+    var inputs = document.getElementsByTagName(tagName);
+    Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
+    if (document.activeElement.tagName == tagName){
+      console.log("Input box focused on page load, goto INSERT mode");
+      gState.set("INSERT");
+    }
+  }
+
+  initStatusBar();
+});
