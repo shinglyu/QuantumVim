@@ -1,14 +1,23 @@
-var gState = "NORMAL";
+var gState = {
+  _state: "NORMAL",
+  get: function() {
+    return this._state;
+  },
+  set: function(newState) {
+    this._state = newState;
+    updateStatusBar();
+  }
+};
 var gKeyQueue = "";
 var gLinkCodes = {};
 
 document.addEventListener('keypress', function(evt){
-  console.log("State before: " + gState);
+  console.log("State before: " + gState.get());
   let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
   console.log("Key: " + keyStr);
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
-  switch (gState) {
+  switch (gState.get()) {
     case "NORMAL":
       // TODO: extract the command <-> action mapping to a config file
       switch (keyStr) {
@@ -20,7 +29,7 @@ document.addEventListener('keypress', function(evt){
           window.scrollByLines(-1);
           break;
         case 'g':
-          gState = "GOTO";
+          gState.set("GOTO");
           break;
         case 'G':
           window.scrollTo(window.scrollX, document.body.scrollHeight);
@@ -44,7 +53,7 @@ document.addEventListener('keypress', function(evt){
           break;
         case 'f':
           highlight_links();
-          gState = "FOLLOW";
+          gState.set("FOLLOW");
           break;
         case 'r':
           chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
@@ -77,7 +86,7 @@ document.addEventListener('keypress', function(evt){
           window.scrollBy(0, -window.innerHeight / 2);
           break;
         case 'I':
-          gState = "INSERT";
+          gState.set("INSERT");
           break;
       }
       break;
@@ -87,7 +96,7 @@ document.addEventListener('keypress', function(evt){
           window.scrollTo(window.scrollX, 0);
           break;
       }
-      gState = "NORMAL";
+      gState.set("NORMAL");
       break;
     case "FOLLOW":
       switch (keyStr) {
@@ -109,40 +118,13 @@ document.addEventListener('keypress', function(evt){
         case "Escape":
           console.log("ESC => NORMAL mode");
           document.activeElement.blur();
-          gState = "NORMAL";
+          gState.set("NORMAL");
           break;
       }
       break;
   }
-  console.log("State after: " + gState);
+  console.log("State after: " + gState.get());
 });
-
-
-window.addEventListener('load', function(){
-  autoInsertModeElements = ['INPUT', 'TEXTAREA'];
-
-  function registerAndEnterAutoInsertMode(elem){
-      console.log("Adding auto insert mode listener for element: " + elem);
-      elem.addEventListener('focus', function(evt){
-        console.log("Input box focused, goto INSERT mode");
-        gState = "INSERT";
-      });
-      elem.addEventListener('blur', function(evt){
-        console.log("Input box blurred, goto NORMAL mode");
-        gState = "NORMAL";
-      });
-  }
-
-  for (let tagName of autoInsertModeElements){
-    var inputs = document.getElementsByTagName(tagName);
-    Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
-    if (document.activeElement.tagName == tagName){
-      console.log("Input box focused on page load, goto INSERT mode");
-      gState = "INSERT";
-    }
-  }
-});
-
 
 function copyToClipboard(str) {
   // Once bug 1197451 is done, we can use Services.clipboardRead/Write
@@ -195,8 +177,8 @@ function highlight_links() {
     elem.appendChild(codehint);
 
     gLinkCodes[String(code)] = {
-      'element':elem, 
-      'codehint': codehint, 
+      'element':elem,
+      'codehint': codehint
     };
     code += 1;
   });
@@ -256,5 +238,54 @@ function follow_to_normal() {
   reduce_highlights("NEVER_MATCH");
   gLinkCodes = {};
   gKeyQueue = "";
-  gState = "NORMAL";
+  gState.set("NORMAL");
 }
+
+function updateStatusBar(){
+  console.log("State changed to " + gState.get());
+  if (gState.get() == "NORMAL") {
+    document.getElementById("statusbar").textContent = "";
+  }
+  else {
+    document.getElementById("statusbar").textContent = "-- " + gState.get() + " --";
+  }
+}
+
+function initStatusBar(){
+  var statusbar = document.createElement('span');
+  statusbar.style.position = "fixed";
+  statusbar.style.bottom = "0";
+  statusbar.style.left = "0";
+  statusbar.style.backgroundColor = "rgba(219,219, 182, 0.5)";
+  statusbar.style.color = "black";
+  statusbar.id = "statusbar";
+
+  document.body.appendChild(statusbar);
+}
+
+window.addEventListener('load', function(){
+  autoInsertModeElements = ['INPUT', 'TEXTAREA'];
+
+  function registerAndEnterAutoInsertMode(elem){
+      console.log("Adding auto insert mode listener for element: " + elem);
+      elem.addEventListener('focus', function(evt){
+        console.log("Input box focused, goto INSERT mode");
+        gState.set("INSERT");
+      });
+      elem.addEventListener('blur', function(evt){
+        console.log("Input box blurred, goto NORMAL mode");
+        gState.set("NORMAL");
+      });
+  }
+
+  for (let tagName of autoInsertModeElements){
+    var inputs = document.getElementsByTagName(tagName);
+    Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
+    if (document.activeElement.tagName == tagName){
+      console.log("Input box focused on page load, goto INSERT mode");
+      gState.set("INSERT");
+    }
+  }
+
+  initStatusBar();
+});
