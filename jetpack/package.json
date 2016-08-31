@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "Extra vim commands that is not supported in QuantumVim because of the limitations of WebExtension",
   "main": "index.js",
-  "author": "Shing Lyu",
+  "author": "Shing Lyu & Johnathan Hao",
   "engines": {
     "firefox": ">=38.0a1",
     "fennec": ">=38.0a1"
