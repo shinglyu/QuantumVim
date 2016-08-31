@@ -1,18 +1,18 @@
 chrome.runtime.onMessage.addListener(
   function(request, sender, sendResponse) {
-    console.log(request);
-    console.log(sender.tab);
+
+
     switch (request.type) {
       case "switch_tab_left":
-        console.log("Switching to left tab");
+
         switchTab(-1);
         break;
       case "switch_tab_right":
-        console.log("Switching to right tab");
+
         switchTab(1);
         break;
       case "reload":
-        console.log("Reload, bypassCache = " + request.bypassCache);
+
         chrome.tabs.reload({ bypassCache: request.bypassCache });
         break;
       case "close_tab":
@@ -71,7 +71,7 @@ function switchTab(offset) {
 
     // finally, get the index of the tab to activate and activate it
     let tabToActivate = yield getTabByIndex((currentIndex+offset+numTabs) % numTabs);
-    console.log("Move from tab #" + currentIndex + " to #" + tabToActivate.index);
+
     yield activateTab(tabToActivate);
   });
 }

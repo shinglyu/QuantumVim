@@ -12,9 +12,9 @@ var gKeyQueue = "";
 var gLinkCodes = {};
 
 document.addEventListener('keypress', function(evt){
-  console.log("State before: " + gState.get());
+
   let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
-  console.log("Key: " + keyStr);
+
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
   switch (gState.get()) {
@@ -101,14 +101,14 @@ document.addEventListener('keypress', function(evt){
     case "FOLLOW":
       switch (keyStr) {
         case "Escape":
-          console.log("ESC => NORMAL mode");
+
           follow_to_normal();
           break;
         case "Enter":
           follow_link(gKeyQueue);
           break;
         default:
-          console.log("Follow code: " + keyStr);
+
           accumulate_link_codes(keyStr);
           break;
       }
@@ -116,14 +116,14 @@ document.addEventListener('keypress', function(evt){
     case "INSERT":
       switch (keyStr) {
         case "Escape":
-          console.log("ESC => NORMAL mode");
+
           document.activeElement.blur();
           gState.set("NORMAL");
           break;
       }
       break;
   }
-  console.log("State after: " + gState.get());
+
 });
 
 function copyToClipboard(str) {
@@ -157,7 +157,7 @@ function highlight_links() {
   // TODO: asdfghjkl; codes
   var code = 0;
   Array.prototype.forEach.call(links, function(elem){
-    // console.log(elem);
+
     elem._originalBackgroundColor = elem.style.backgroundColor;
     elem._originalPosition = elem.style.position;
     elem.style.backgroundColor = 'yellow';
@@ -195,7 +195,7 @@ function reduce_highlights(remain_pattern) {
 }
 
 function accumulate_link_codes(keyStr){
-  console.log("Received " + keyStr + ", current queue: " + gKeyQueue);
+
   // TODO: make this more generic, handle chars
   if (!(/^[0-9]$/.test(keyStr))){
     return;
@@ -210,7 +210,7 @@ function accumulate_link_codes(keyStr){
   }
 
   var matchesCount = Object.keys(newGLinkCodes).length;
-  console.log("Found " + matchesCount + " matches");
+
 
   if (matchesCount === 0) {
     // Cleanup and go back to normal mode
@@ -227,7 +227,7 @@ function accumulate_link_codes(keyStr){
 }
 
 function follow_link(key){
-  console.log("Clicking " + key);
+
   if (typeof(gLinkCodes[key]) !== "undefined") {
     gLinkCodes[key].element.click();
   }
@@ -242,7 +242,7 @@ function follow_to_normal() {
 }
 
 function updateStatusBar(){
-  console.log("State changed to " + gState.get());
+
   if (gState.get() == "NORMAL") {
     document.getElementById("statusbar").textContent = "";
   }
@@ -267,13 +267,13 @@ window.addEventListener('load', function(){
   autoInsertModeElements = ['INPUT', 'TEXTAREA'];
 
   function registerAndEnterAutoInsertMode(elem){
-      console.log("Adding auto insert mode listener for element: " + elem);
+
       elem.addEventListener('focus', function(evt){
-        console.log("Input box focused, goto INSERT mode");
+
         gState.set("INSERT");
       });
       elem.addEventListener('blur', function(evt){
-        console.log("Input box blurred, goto NORMAL mode");
+
         gState.set("NORMAL");
       });
   }
@@ -282,7 +282,7 @@ window.addEventListener('load', function(){
     var inputs = document.getElementsByTagName(tagName);
     Array.prototype.forEach.call(inputs, registerAndEnterAutoInsertMode);
     if (document.activeElement.tagName == tagName){
-      console.log("Input box focused on page load, goto INSERT mode");
+
       gState.set("INSERT");
     }
   }
