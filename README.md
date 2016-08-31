@@ -4,7 +4,11 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 
 ![screenshot](https://github.com/shinglyu/QuantumVim/raw/master/doc/screenshot.png)
 
-# Installation
+# Normal Install
+* [Install From AMO](https://addons.mozilla.org/zh-TW/firefox/addon/quantumvim-extra/)
+* We recommend you use this with [QuantumVim Extra](https://addons.mozilla.org/zh-TW/firefox/addon/quantumvim-extra/)
+
+# Debug Installation
 * Open `about:debugging`, click "Load temporary add-on"
 * Select the `manifest.json`
 
