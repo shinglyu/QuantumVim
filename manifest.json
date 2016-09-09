@@ -15,7 +15,8 @@
     {
       "matches":["<all_urls>"],
       "js": ["vim.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "match_about_blank": true
     }
   ],
   "background": {
