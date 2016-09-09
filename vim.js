@@ -11,6 +11,15 @@ var gState = {
 var gKeyQueue = "";
 var gLinkCodes = {};
 
+function confirmOrGoToInsert(msg, callback) {
+  if (confirm(msg)){
+    callback();
+  }
+  else {
+    gState.set("INSERT");
+  }
+}
+
 document.addEventListener('keypress', function(evt){
 
   let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
@@ -56,10 +65,14 @@ document.addEventListener('keypress', function(evt){
           gState.set("FOLLOW");
           break;
         case 'r':
-          chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
+          confirmOrGoToInsert("Refresh the tab?", function(){
+            chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
+          })
           break;
         case 'R':
-          chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
+          confirmOrGoToInsert("Refresh the tab without cache?", function(){
+            chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
+          })
           break;
         case 'y':
           copyCurrentLocation();
@@ -68,20 +81,14 @@ document.addEventListener('keypress', function(evt){
           document.execCommand('copy');
           break;
         case 'd':
-          if (confirm("Close the tab?")){
+          confirmOrGoToInsert("Close the tab?", function(){
             chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: false });
-          }
-          else {
-            gState.set("INSERT");
-          }
+          })
           break;
         case 'D':
-          if (confirm("Close the tab?")){
-            chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true });
-          }
-          else {
-            gState.set("INSERT");
-          }
+          confirmOrGoToInsert("Close the tab?", function(){
+            chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true});
+          })
           break;
         case 'C-b':
           window.scrollByPages(-1);
