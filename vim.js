@@ -68,10 +68,20 @@ document.addEventListener('keypress', function(evt){
           document.execCommand('copy');
           break;
         case 'd':
-          chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: false });
+          if (confirm("Close the tab?")){
+            chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: false });
+          }
+          else {
+            gState.set("INSERT");
+          }
           break;
         case 'D':
-          chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true });
+          if (confirm("Close the tab?")){
+            chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true });
+          }
+          else {
+            gState.set("INSERT");
+          }
           break;
         case 'C-b':
           window.scrollByPages(-1);
