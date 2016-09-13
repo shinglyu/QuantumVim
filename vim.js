@@ -21,12 +21,18 @@ document.addEventListener('keypress', function(evt){
     case "NORMAL":
       // TODO: extract the command <-> action mapping to a config file
       switch (keyStr) {
-        case 'j':
+        case 'h':
           // TODO: make the scroll configurable
+          window.scrollBy(-19, 0);
+          break;
+        case 'j':
           window.scrollByLines(1);
           break;
         case 'k':
           window.scrollByLines(-1);
+          break;
+        case 'l':
+          window.scrollBy(19, 0);
           break;
         case 'g':
           gState.set("GOTO");
@@ -35,12 +41,10 @@ document.addEventListener('keypress', function(evt){
           window.scrollTo(window.scrollX, document.body.scrollHeight);
           break;
         case 'J':
-          // TODO: make the scroll configurable
           //chrome.tabs.update(1, {selected: true});
           chrome.runtime.sendMessage({type:'switch_tab_left'});
           break;
         case 'K':
-          // TODO: make the scroll configurable
           chrome.runtime.sendMessage({type:'switch_tab_right'});
           break;
         case 'H':
