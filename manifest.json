@@ -2,6 +2,7 @@
   "manifest_version": 2,
   "name": "QuantumVim",
   "version": "1.0",
+  "author": "Shing Lyu & Johnathan Hao",
 
   "description": "Adds basic vim commands to Firefox 48+ (with e10s & WebExtension)",
   "icons": {
@@ -14,7 +15,8 @@
     {
       "matches":["<all_urls>"],
       "js": ["vim.js", "focusin.min.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "match_about_blank": true
     }
   ],
   "background": {
