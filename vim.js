@@ -118,6 +118,9 @@ document.addEventListener('keypress', function(evt){
         case 'z':
           gState.set("ZOOM");
           break;
+        case "Escape":
+          document.activeElement.blur();
+          break;
       }
       break;
     case "GOTO":
