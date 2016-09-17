@@ -105,6 +105,9 @@ document.addEventListener('keypress', function(evt){
         case 'I':
           gState.set("INSERT");
           break;
+        case 'z':
+          gState.set("ZOOM");
+          break;
       }
       break;
     case "GOTO":
@@ -135,6 +138,18 @@ document.addEventListener('keypress', function(evt){
         case "Escape":
 
           document.activeElement.blur();
+          gState.set("NORMAL");
+          break;
+      }
+      break;
+    case "ZOOM":
+      switch (keyStr) {
+        case "i":
+          chrome.runtime.sendMessage({ type: 'zoom_in'});
+          gState.set("NORMAL");
+          break;
+        case "o":
+          chrome.runtime.sendMessage({ type: 'zoom_out'});
           gState.set("NORMAL");
           break;
       }
