@@ -25,7 +25,6 @@ function openTab() {
     urlbar.focus();
   }, 500);
 }
-
 var openHotKey = Hotkey({
   combo: "ctrl-shift-t",
   onPress: openTab
@@ -36,3 +35,20 @@ var openHotKey = Hotkey({
   combo: "ctrl-shift-n",
   onPress: openTab
 });
+
+
+function registerCloseTimer(tab) {
+  console.log("Registering for " + tab.url);
+  if (tab.url.startsWith('about:')){
+    console.log("Found " + tab.url);
+    //tab.on("deactivate", function(){
+      console.log("Deactivated " + tab.url);
+      setTimeout(function(){
+        console.log("Closing " + tab.url);
+        tab.close();
+      }, 3000);
+    //});
+  }
+}
+
+tabs.on("deactivate", registerCloseTimer);
