@@ -8,9 +8,27 @@ var gState = {
     updateStatusBar();
   }
 };
+
 var gKeyQueue = "";
 var gLinkCodes = {};
 var gAutoInsertModeElements = ['INPUT', 'TEXTAREA'];
+
+function generateLinksChars() {
+  output = [];
+  var chars = "jfkdls;ahgurieowpqytnvmc,x.z";
+  for (var idx = 0; idx < chars.length; idx++) {
+    output.push(chars[idx]);
+  }
+
+  for (var idx1=0; idx1 < chars.length; idx1++) {
+    for (var idx2=0; idx2 < chars.length; idx2++) {
+      output.push(chars[idx1] + chars[idx2]);
+    }
+  }
+  // TODO: if there is too much link, there will be some bug
+  return output;
+}
+var gLinkChars = generateLinksChars();
 
 function confirmOrGoToInsert(msg, callback) {
   if (confirm(msg)){
@@ -221,22 +239,46 @@ function copyCurrentLocation() {
 }
 
 /* Link Following */
+
+function isElementVisible(el) {
+    var rect = el.getBoundingClientRect();
+
+    console.log(rect.top >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight) ||
+     rect.bottom >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight))
+        console.log(rect.left >= 0 && rect.left <= (window.innerWidth || document.documentElement.clientWidth)  ||
+        rect.right >= 0 && rect.right <= (window.innerWidth || document.documentElement.clientWidth));
+    return (
+        (rect.top >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight) ||
+        rect.bottom >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)) &&
+        (rect.left >= 0 && rect.left <= (window.innerWidth || document.documentElement.clientWidth)  ||
+        rect.right >= 0 && rect.right <= (window.innerWidth || document.documentElement.clientWidth))
+    );
+}
 function highlight_links() {
   // TODO: buttons, inputs
   var links = document.querySelectorAll('a');
   // TODO: asdfghjkl; codes
   var code = 0;
   Array.prototype.forEach.call(links, function(elem){
+    if (!isElementVisible(elem)){
+      // TODO: smartly skip elements
+      return
+    }
+
 
     elem._originalBackgroundColor = elem.style.backgroundColor;
     elem._originalPosition = elem.style.position;
     elem.style.backgroundColor = 'yellow';
 
+    var readableCode = gLinkChars[code];
+
     var codehint = document.createElement('span');
-    codehint.textContent = code;
+    codehint.textContent = readableCode.toUpperCase();
+    codehint.style.all="unset";
     codehint.style.border="solid 1px black";
     codehint.style.backgroundColor="white";
-    codehint.style.font="12px/14px bold sans-serif";
+    codehint.style.font="12px/14px bold ";
+    codehint.style.fontFamily="monospace";
     codehint.style.color="darkred";
     codehint.style.position="absolute";
     codehint.style.top="0";
@@ -246,16 +288,27 @@ function highlight_links() {
     elem.style.position="relative";
     elem.appendChild(codehint);
 
-    gLinkCodes[String(code)] = {
-      'element':elem,
+
+    gLinkCodes[readableCode] = {
+      'element': elem,
       'codehint': codehint
     };
     code += 1;
+    /* DEBUG */
+      console.log(readableCode)
+      console.log(elem)
   });
 }
 
 function reduce_highlights(remain_pattern) {
   for (var code in gLinkCodes) {
+    /* DEBUG */
+    if (code == "kn"){
+      console.log(code)
+      console.log(remain_pattern)
+      console.log(gLinkCodes[code].element)
+      console.log(gLinkCodes[code].codehint)
+    }
     if (!code.startsWith(remain_pattern)) {
       gLinkCodes[code].element.style.backgroundColor = gLinkCodes[code].element._originalBackgroundColor;
       gLinkCodes[code].element.style.position= gLinkCodes[code].element._originalPosition;
@@ -267,11 +320,11 @@ function reduce_highlights(remain_pattern) {
 function accumulate_link_codes(keyStr){
 
   // TODO: make this more generic, handle chars
-  if (!(/^[0-9]$/.test(keyStr))){
+  if (!(/^[0-9a-z,;.]$/.test(keyStr))){
     return;
   }
   gKeyQueue += keyStr;
-  newGLinkCodes = {};
+  var newGLinkCodes = {};
   for (var code in gLinkCodes){
     if (code.startsWith(gKeyQueue)){
       // TODO: many return a new list instead?
