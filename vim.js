@@ -243,10 +243,6 @@ function copyCurrentLocation() {
 function isElementVisible(el) {
     var rect = el.getBoundingClientRect();
 
-    console.log(rect.top >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight) ||
-     rect.bottom >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight))
-        console.log(rect.left >= 0 && rect.left <= (window.innerWidth || document.documentElement.clientWidth)  ||
-        rect.right >= 0 && rect.right <= (window.innerWidth || document.documentElement.clientWidth));
     return (
         (rect.top >= 0 && rect.top <= (window.innerHeight || document.documentElement.clientHeight) ||
         rect.bottom >= 0 && rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)) &&
@@ -262,7 +258,7 @@ function highlight_links() {
   Array.prototype.forEach.call(links, function(elem){
     if (!isElementVisible(elem)){
       // TODO: smartly skip elements
-      return
+      return;
     }
 
 
@@ -294,21 +290,12 @@ function highlight_links() {
       'codehint': codehint
     };
     code += 1;
-    /* DEBUG */
-      console.log(readableCode)
-      console.log(elem)
   });
 }
 
 function reduce_highlights(remain_pattern) {
   for (var code in gLinkCodes) {
     /* DEBUG */
-    if (code == "kn"){
-      console.log(code)
-      console.log(remain_pattern)
-      console.log(gLinkCodes[code].element)
-      console.log(gLinkCodes[code].codehint)
-    }
     if (!code.startsWith(remain_pattern)) {
       gLinkCodes[code].element.style.backgroundColor = gLinkCodes[code].element._originalBackgroundColor;
       gLinkCodes[code].element.style.position= gLinkCodes[code].element._originalPosition;
