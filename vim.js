@@ -1,16 +1,27 @@
 var gState = {
   _state: "NORMAL",
+  _timerId: undefined,
   get: function() {
     return this._state;
   },
   set: function(newState) {
     this._state = newState;
     updateStatusBar();
+    window.clearTimeout(this._timerId);
+  },
+  setTimer: function(endState, time){
+    this._timerId = window.setTimeout(function(){
+      this.set(endState);
+    }.bind(this), time);
   }
 };
 var gKeyQueue = "";
 var gLinkCodes = {};
 var gAutoInsertModeElements = ['INPUT', 'TEXTAREA'];
+var gLastKeyPressTime = Date.now();
+var gLastKey = "";
+var gDebounceInterval = 500;
+var gDebounceReturnTimeout = 1000;
 
 function confirmOrGoToInsert(msg, callback) {
   if (confirm(msg)){
@@ -30,9 +41,26 @@ function goToMainInput() {
   }
 }
 
+function debounce(keyStr) {
+  if (gState.get() == "NORMAL") {
+    if (Date.now() - gLastKeyPressTime < gDebounceInterval &&
+         !(keyStr == "j" && gLastKey == "j") &&
+         !(keyStr == "k" && gLastKey == "k")
+       ){
+      gState.set("INSERT");
+      gState.setTimer("NORMAL", gDebounceReturnTimeout);
+    }
+  }
+  gLastKeyPressTime = Date.now();
+  gLastKey = keyStr;
+}
+
 document.addEventListener('keypress', function(evt){
 
   let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
+
+  debounce(keyStr);
+
 
   // TODO: Handling state in a global var is not good enough,
   // consider some design pattern here
