@@ -3,6 +3,8 @@ var tabs = require('sdk/tabs');
 var { Hotkey } = require('sdk/hotkeys');
 var { setTimeout  } = require("sdk/timers");
 
+var closeAboutTimeout = 180000;
+
 var openHotKey = Hotkey({
   // o and shift-o will block your typing
   // fix this after we implement INSERT mode switching
@@ -46,7 +48,7 @@ function registerCloseTimer(tab) {
       setTimeout(function(){
         console.log("Closing " + tab.url);
         tab.close();
-      }, 3000);
+      }, closeAboutTimeout);
     //});
   }
 }
