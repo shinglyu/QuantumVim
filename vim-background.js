@@ -21,14 +21,14 @@ chrome.runtime.onMessage.addListener(
 
       case "zoom_in":
         chrome.tabs.getZoom(function(curr_zoom){
-          var target_zoom = Math.min(curr_zoom * 1.08, 3.0)
+          var target_zoom = Math.min(curr_zoom * 1.08, 3.0);
           chrome.tabs.setZoom(target_zoom);
         });
         break;
 
       case "zoom_out":
         chrome.tabs.getZoom(function(curr_zoom){
-          var target_zoom = Math.max(curr_zoom * 0.92, 0.3)
+          var target_zoom = Math.max(curr_zoom * 0.92, 0.3);
           chrome.tabs.setZoom(target_zoom);
         });
         break;
