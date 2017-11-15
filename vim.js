@@ -56,8 +56,9 @@ function debounce(keyStr) {
 }
 
 document.addEventListener('keypress', function(evt){
-
-  let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
+  let keyStr = evt.key;
+  if (evt.ctrlKey) keyStr = 'C-' + keyStr;
+  if (evt.metaKey) keyStr = 'M-' + keyStr;
 
   debounce(keyStr);
 
