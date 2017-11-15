@@ -102,15 +102,8 @@ document.addEventListener('keypress', function(evt){
           highlight_links();
           gState.set("FOLLOW");
           break;
-        case 'r':
-          confirmOrGoToInsert("Refresh the tab?", function(){
-            chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
-          });
-          break;
         case 'R':
-          confirmOrGoToInsert("Refresh the tab without cache?", function(){
-            chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
-          });
+          chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
           break;
         case 'y':
           copyCurrentLocation();
@@ -248,6 +241,16 @@ function copyCurrentLocation() {
   copyToClipboard(window.location.href);
 }
 
+function link_hint_code_to_letters(code) {
+  var map = "qewrtasdfgzxcvb";
+  var out = '';
+  do {
+    out = map[code % map.length] + out;
+    code /= map.length;
+  } while (code > 0);
+  return out;
+}
+
 /* Link Following */
 function highlight_links() {
   // TODO: buttons, inputs
@@ -261,7 +264,7 @@ function highlight_links() {
     elem.style.backgroundColor = 'yellow';
 
     var codehint = document.createElement('span');
-    codehint.textContent = code;
+    codehint.textContent = link_hint_code_to_letters(code);
     codehint.style.border="solid 1px black";
     codehint.style.backgroundColor="white";
     codehint.style.font="12px/14px bold sans-serif";
@@ -274,7 +277,7 @@ function highlight_links() {
     elem.style.position="relative";
     elem.appendChild(codehint);
 
-    gLinkCodes[String(code)] = {
+    gLinkCodes[link_hint_code_to_letters(code)] = {
       'element':elem,
       'codehint': codehint
     };
@@ -293,11 +296,6 @@ function reduce_highlights(remain_pattern) {
 }
 
 function accumulate_link_codes(keyStr){
-
-  // TODO: make this more generic, handle chars
-  if (!(/^[0-9]$/.test(keyStr))){
-    return;
-  }
   gKeyQueue += keyStr;
   newGLinkCodes = {};
   for (var code in gLinkCodes){
