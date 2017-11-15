@@ -241,31 +241,31 @@ function copyCurrentLocation() {
   copyToClipboard(window.location.href);
 }
 
-function link_hint_code_to_letters(code) {
-  var map = "qewrtasdfgzxcvb";
-  var out = '';
-  do {
-    out = map[code % map.length] + out;
-    code /= map.length;
-  } while (code > 0);
-  return out;
-}
 
 /* Link Following */
 function highlight_links() {
   // TODO: buttons, inputs
   var links = document.querySelectorAll('a');
-  // TODO: asdfghjkl; codes
+  function hint_code_to_letters(code) {
+    var map = "qewrtasdfgzxcvb";
+    var out = '';
+    do {
+      out = '' + map[code % map.length] + out;
+      code = code / map.length | 0;
+    } while (code > 0);
+    return out;
+  }
+
   var code = 0;
-  Array.prototype.forEach.call(links, function(elem){
+  Array.prototype.forEach.call(links, function(elem) {
 
     elem._originalBackgroundColor = elem.style.backgroundColor;
     elem._originalPosition = elem.style.position;
     elem.style.backgroundColor = 'yellow';
 
     var codehint = document.createElement('span');
-    codehint.textContent = link_hint_code_to_letters(code);
-    codehint.style.border="solid 1px black";
+    codehint.textContent = hint_code_to_letters(code);
+    codehint.style.border="solid 0.2px black";
     codehint.style.backgroundColor="white";
     codehint.style.font="12px/14px bold sans-serif";
     codehint.style.color="darkred";
@@ -277,7 +277,7 @@ function highlight_links() {
     elem.style.position="relative";
     elem.appendChild(codehint);
 
-    gLinkCodes[link_hint_code_to_letters(code)] = {
+    gLinkCodes[hint_code_to_letters(code)] = {
       'element':elem,
       'codehint': codehint
     };
