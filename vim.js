@@ -160,6 +160,12 @@ document.addEventListener('keypress', function(evt){
         case 'g':
           window.scrollTo(window.scrollX, 0);
           break;
+        case 't':
+          chrome.runtime.sendMessage({type:'switch_tab_right'});
+          break;
+        case 'T':
+          chrome.runtime.sendMessage({type:'switch_tab_left'});
+          break;
 
         case 'i':
           goToMainInput();
