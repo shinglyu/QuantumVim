@@ -107,8 +107,11 @@ document.addEventListener('keypress', function(evt){
           highlight_links();
           gState.set("FOLLOW");
           break;
-        case 'R':
+        case 'r':
           chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
+          break;
+        case 'R':
+          chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
           break;
         case 'y':
           copyCurrentLocation();
@@ -148,7 +151,6 @@ document.addEventListener('keypress', function(evt){
           document.activeElement.blur();
           break;
         case 't':
-          console.log("Open new tab")
           chrome.runtime.sendMessage({type:'open_new_tab'});
           break;
       }
