@@ -151,7 +151,10 @@ document.addEventListener('keypress', function(evt){
           document.activeElement.blur();
           break;
         case 't':
-          chrome.runtime.sendMessage({type:'open_new_tab'});
+          chrome.runtime.sendMessage({ type:'open_new_tab' });
+          break;
+        case 'C-z':
+          chrome.runtime.sendMessage({ type:'close_system_tabs' });
           break;
       }
       break;

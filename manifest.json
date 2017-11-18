@@ -22,5 +22,15 @@
   "background": {
     "scripts": ["vim-background.js"],
     "persistent": false
+  },
+  "commands": {
+    "close_system_tabs": {
+      "suggested_key": {
+        "default": "Ctrl+Z",
+        "mac": "Command+Z",
+        "linux": "Ctrl+Z"
+      },
+      "description": "Close system tabs that doesn't work with QuantumVim"
+    }
   }
 }
