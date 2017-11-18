@@ -15,6 +15,10 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.reload({ bypassCache: request.bypassCache });
         break;
 
+      case "open_new_tab":
+        chrome.tabs.create({});
+        break;
+
       case "close_tab":
         closeTab(request.focusLeft);
         break;

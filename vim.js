@@ -147,6 +147,10 @@ document.addEventListener('keypress', function(evt){
         case "Escape":
           document.activeElement.blur();
           break;
+        case 't':
+          console.log("Open new tab")
+          chrome.runtime.sendMessage({type:'open_new_tab'});
+          break;
       }
       break;
     case "GOTO":
