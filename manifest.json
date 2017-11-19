@@ -9,7 +9,8 @@
     "48": "icons/icon-48.png"
   },
   "permissions": [
-    "tabs"
+    "tabs",
+    "sessions"
   ],
   "content_scripts": [
     {

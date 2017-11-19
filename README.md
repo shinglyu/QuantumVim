@@ -27,6 +27,7 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * `f`: follow links, press <Esc> to abort.
 * When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 * `I`: enter INSERT MODE manually
+* `u`: undo most recently closed tab
 
 # TODO:
 * `:open`: open an URL or search
