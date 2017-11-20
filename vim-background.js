@@ -15,8 +15,15 @@ chrome.runtime.onMessage.addListener(
         chrome.tabs.reload({ bypassCache: request.bypassCache });
         break;
 
+      case "open_new_tab":
+        chrome.tabs.create({});
+        break;
+
       case "close_tab":
         closeTab(request.focusLeft);
+        break;
+      case "close_system_tabs":
+        closeSystemTabs();
         break;
 
       case "zoom_in":
@@ -111,3 +118,35 @@ function closeTab(focusLeft) {
     chrome.tabs.remove(tab.id);
   });
 }
+
+function closeSystemTabs() {
+  // Pages that doesn't allow script inject, thus will block QuantumVim
+  var urls = {
+    'about:blank': null,
+    'about:newtab': null,
+    'about:debugging': null,
+    'about:addons': null,
+    'about:preferences': null,
+    'about:preferences#general': null,
+    'about:preferences#search': null,
+    'about:preferences#privacy': null,
+    'about:preferences#sync': null,
+  }
+  //chrome.tabs.query({"url": urls}, function(tabs){
+  chrome.tabs.query({}, function(tabs){
+    for (var tab of tabs){
+      if (tab.url in urls) {
+        chrome.tabs.remove(tab.id)
+      }
+    }
+  });
+
+}
+
+chrome.commands.onCommand.addListener(function(command) {
+  switch (command) {
+    case "close_system_tabs":
+      closeSystemTabs();
+      break;
+  }
+});

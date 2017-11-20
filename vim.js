@@ -56,8 +56,9 @@ function debounce(keyStr) {
 }
 
 document.addEventListener('keypress', function(evt){
-
-  let keyStr = (evt.ctrlKey ? "C-" : "") + evt.key;
+  let keyStr = evt.key;
+  if (evt.ctrlKey) keyStr = 'C-' + keyStr;
+  if (evt.metaKey) keyStr = 'M-' + keyStr;
 
   debounce(keyStr);
 
@@ -107,14 +108,10 @@ document.addEventListener('keypress', function(evt){
           gState.set("FOLLOW");
           break;
         case 'r':
-          confirmOrGoToInsert("Refresh the tab?", function(){
-            chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
-          });
+          chrome.runtime.sendMessage({ type: 'reload', bypassCache: false });
           break;
         case 'R':
-          confirmOrGoToInsert("Refresh the tab without cache?", function(){
-            chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
-          });
+          chrome.runtime.sendMessage({ type: 'reload', bypassCache: true });
           break;
         case 'y':
           copyCurrentLocation();
@@ -155,6 +152,12 @@ document.addEventListener('keypress', function(evt){
           break;
         case "Escape":
           document.activeElement.blur();
+          break;
+        case 't':
+          chrome.runtime.sendMessage({ type:'open_new_tab' });
+          break;
+        case 'C-z':
+          chrome.runtime.sendMessage({ type:'close_system_tabs' });
           break;
       }
       break;
@@ -261,21 +264,31 @@ function copyCurrentLocation() {
   copyToClipboard(window.location.href);
 }
 
+
 /* Link Following */
 function highlight_links() {
   // TODO: buttons, inputs
   var links = document.querySelectorAll('a');
-  // TODO: asdfghjkl; codes
+  function hint_code_to_letters(code) {
+    var map = "qewrtasdfgzxcvb";
+    var out = '';
+    do {
+      out = '' + map[code % map.length] + out;
+      code = code / map.length | 0;
+    } while (code > 0);
+    return out;
+  }
+
   var code = 0;
-  Array.prototype.forEach.call(links, function(elem){
+  Array.prototype.forEach.call(links, function(elem) {
 
     elem._originalBackgroundColor = elem.style.backgroundColor;
     elem._originalPosition = elem.style.position;
     elem.style.backgroundColor = 'yellow';
 
     var codehint = document.createElement('span');
-    codehint.textContent = code;
-    codehint.style.border="solid 1px black";
+    codehint.textContent = hint_code_to_letters(code);
+    codehint.style.border="solid 0.2px black";
     codehint.style.backgroundColor="white";
     codehint.style.font="12px/14px bold sans-serif";
     codehint.style.color="darkred";
@@ -287,7 +300,7 @@ function highlight_links() {
     elem.style.position="relative";
     elem.appendChild(codehint);
 
-    gLinkCodes[String(code)] = {
+    gLinkCodes[hint_code_to_letters(code)] = {
       'element':elem,
       'codehint': codehint
     };
@@ -306,11 +319,6 @@ function reduce_highlights(remain_pattern) {
 }
 
 function accumulate_link_codes(keyStr){
-
-  // TODO: make this more generic, handle chars
-  if (!(/^[0-9]$/.test(keyStr))){
-    return;
-  }
   gKeyQueue += keyStr;
   newGLinkCodes = {};
   for (var code in gLinkCodes){

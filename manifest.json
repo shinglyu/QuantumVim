@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "QuantumVim",
-  "version": "1.1",
+  "version": "1.2",
   "author": "Shing Lyu & Johnathan Hao",
 
   "description": "Adds basic vim commands to Firefox 48+ (with e10s & WebExtension)",
@@ -23,5 +23,15 @@
   "background": {
     "scripts": ["vim-background.js"],
     "persistent": false
+  },
+  "commands": {
+    "close_system_tabs": {
+      "suggested_key": {
+        "default": "Ctrl+Z",
+        "mac": "Command+Z",
+        "linux": "Ctrl+Z"
+      },
+      "description": "Close system tabs that doesn't work with QuantumVim"
+    }
   }
 }

@@ -5,7 +5,7 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 ![screenshot](https://github.com/shinglyu/QuantumVim/raw/master/doc/screenshot.png)
 
 # Normal Install
-* [Install From AMO](https://addons.mozilla.org/zh-TW/firefox/addon/quantumvim-extra/)
+* [Install From AMO](https://addons.mozilla.org/zh-TW/firefox/addon/quantumvim/)
 * We recommend you use this with [QuantumVim Extra](https://addons.mozilla.org/zh-TW/firefox/addon/quantumvim-extra/)
 
 # Debug Installation
@@ -28,6 +28,8 @@ QuantumVim is a vim key-binding add-on for Firefox. It is targeting future Firef
 * When focusing on an `<input>` element. It will automatically enters the INSERT MODE.
 * `I`: enter INSERT MODE manually
 * `u`: undo most recently closed tab
+* `t`: Open a new tab
+* `<C-z>`: Close all system tabs that doesn't allow QuantumVim to operate (e.g. Preferences, new tab page, about:blank)
 
 # TODO:
 * `:open`: open an URL or search
