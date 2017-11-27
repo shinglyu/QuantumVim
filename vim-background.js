@@ -39,6 +39,17 @@ chrome.runtime.onMessage.addListener(
           chrome.tabs.setZoom(target_zoom);
         });
         break;
+      case "undo_close_tab":
+        chrome.sessions.getRecentlyClosed({ maxResults: 1 }, function(recentSessions){
+          if (!recentSessions.length) {
+            return;
+          }
+          let prevSession = recentSessions[0];
+          if (prevSession.tab) {
+            chrome.sessions.restore(prevSession.tab.sessionId);
+          }
+        });
+        break;
     }
   }
 );

@@ -126,7 +126,7 @@ document.addEventListener('keypress', function(evt){
           break;
         case 'D':
           confirmOrGoToInsert("Close the tab?", function(){
-            chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true});
+            chrome.runtime.sendMessage({ type: 'close_tab', focusLeft: true });
           });
           break;
         case 'C-b':
@@ -147,6 +147,9 @@ document.addEventListener('keypress', function(evt){
         case 'z':
           gState.set("ZOOM");
           break;
+        case 'u':
+          chrome.runtime.sendMessage({ type: 'undo_close_tab' });
+          break;
         case "Escape":
           document.activeElement.blur();
           break;
@@ -164,10 +167,10 @@ document.addEventListener('keypress', function(evt){
           window.scrollTo(window.scrollX, 0);
           break;
         case 't':
-          chrome.runtime.sendMessage({type:'switch_tab_right'});
+          chrome.runtime.sendMessage({ type:'switch_tab_right' });
           break;
         case 'T':
-          chrome.runtime.sendMessage({type:'switch_tab_left'});
+          chrome.runtime.sendMessage({ type:'switch_tab_left' });
           break;
 
         case 'i':
@@ -203,10 +206,10 @@ document.addEventListener('keypress', function(evt){
     case "ZOOM":
       switch (keyStr) {
         case "i":
-          chrome.runtime.sendMessage({ type: 'zoom_in'});
+          chrome.runtime.sendMessage({ type: 'zoom_in' });
           break;
         case "o":
-          chrome.runtime.sendMessage({ type: 'zoom_out'});
+          chrome.runtime.sendMessage({ type: 'zoom_out' });
           break;
       }
       gState.set("NORMAL");
